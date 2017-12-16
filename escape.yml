@@ -1,0 +1,17 @@
+name: extension-golang-binary
+version: 0.0.@
+description: 
+logo: 
+
+includes:
+- README.md
+
+inputs:
+- id: package_name
+  default: "github.com/ankyra/user-service"
+- id: binary_name
+  default: "user-service"
+
+build: build.sh
+test: test.sh
+
