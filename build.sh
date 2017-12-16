@@ -4,6 +4,7 @@ set -euf -o pipefail
 
 BINARY_NAME="${INPUT_binary_name}"
 PACKAGE_NAME="${INPUT_package_name}"
+DEPENDS="${INPUT_escape_go_dependencies}"
 DOCKER_PACKAGE_PATH="/go/src/${PACKAGE_NAME}"
 DOCKER_PACKAGE_PARENT_PATH=$(dirname "${DOCKER_PACKAGE_PATH}")
 DOCKER_VERSION=1.9.0
@@ -13,6 +14,26 @@ cleanup_docker() {
     docker rm -v src 1>/dev/null 2>&1 || true
     echo "OK"
 }
+
+copy_dep_to_vendor() {
+    local dep="deps/${1}"
+    local target="vendor/${2}"
+    echo -n "Copying Escape dependency '$dep' to '$target'..."
+    rm -rf "$target"
+    cp -r "$dep" "$target"
+    rm -rf "${target}/vendor/"
+    echo "OK"
+}
+
+install_escape_go_deps() {
+    echo $DEPENDS | jq -r '.[]' | while read line ; do
+        local arrDepends=(${line//:/ })
+        echo ${arrDepends[0]}
+        echo ${arrDepends[1]}
+        copy_dep_to_vendor ${arrDepends[0]} ${arrDepends[1]}
+    done
+}
+
 
 prepare_volume() {
     echo -n "Preparing Docker data volume..."
@@ -35,6 +56,7 @@ copy_binary_out_of_volume() {
 }
 
 main() {
+    install_escape_go_deps
     cleanup_docker
     prepare_volume 
     docker_run "${DOCKER_PACKAGE_PATH}" "go build -v"
