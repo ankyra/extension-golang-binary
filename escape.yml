@@ -5,6 +5,7 @@ logo:
 
 includes:
 - README.md
+- deps.sh
 
 inputs:
 - id: package_name
