@@ -10,11 +10,28 @@ inputs:
 - id: package_name
   default: "github.com/ankyra/user-service"
   description: "The name of the Go package we're building"
+  visible: false
 - id: binary_name
-  default: "user-service"
-  description: "The name of the produced binary"
+  default: ""
+  description: "The name of the produced binary."
+  visible: false
+- id: build_command
+  default: ""
+  description: "Override the build command."
+  visible: false
+- id: test_command
+  default: ""
+  description: "Override the test command."
+  visible: false
+- id: copy_files_after_build
+  visible: false
+  default: []
+  description: |
+    "Copy these files after build. Example:
+    - README.md:file_in_root.txt"
 - id: escape_go_dependencies
   type: list[string]
+  visible: false
   default: []
   description: |
     "Copy these Escape dependencies into vendor/ on build. Example:

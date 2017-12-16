@@ -4,7 +4,9 @@ set -euf -o pipefail
 
 BINARY_NAME="${INPUT_binary_name}"
 PACKAGE_NAME="${INPUT_package_name}"
-DEPENDS="${INPUT_escape_go_dependencies}"
+COPY_FILES="${INPUT_copy_files_after_build}"
+BUILD_COMMAND="${INPUT_build_command}"
+DEPENDS=${INPUT_escape_go_dependencies:-"go build -v"}
 DOCKER_PACKAGE_PATH="/go/src/${PACKAGE_NAME}"
 DOCKER_PACKAGE_PARENT_PATH=$(dirname "${DOCKER_PACKAGE_PATH}")
 DOCKER_VERSION=1.9.0
@@ -53,6 +55,13 @@ copy_binary_out_of_volume() {
     docker cp "src:${DOCKER_PACKAGE_PATH}/${binary_name}" "${binary_name}"
 }
 
+copy_files_out_of_volume() {
+    echo $COPY_FILES | jq -r '.[]' | while read line ; do
+        local arrDepends=(${line//:/ })
+        docker cp "src:${DOCKER_PACKAGE_PATH}/${arrDepends[0]}" "${arrDepends[1]}"
+    done
+}
+
 main() {
     install_escape_go_deps
     if [ "${BINARY_NAME}" = "" ] ; then
@@ -61,8 +70,9 @@ main() {
     fi
     cleanup_docker
     prepare_volume 
-    docker_run "${DOCKER_PACKAGE_PATH}" "go build -v"
+    docker_run "${DOCKER_PACKAGE_PATH}" "${BUILD_COMMAND}"
     copy_binary_out_of_volume "${BINARY_NAME}"
+    copy_files_out_of_volume
 }
 
 trap cleanup_docker EXIT
