@@ -7,6 +7,12 @@ includes:
 - README.md
 
 inputs:
+- id: package_name
+  default: "github.com/ankyra/user-service"
+  description: "The name of the Go package we're building"
+- id: binary_name
+  default: "user-service"
+  description: "The name of the produced binary"
 - id: escape_go_dependencies
   type: list[string]
   default: []
@@ -14,13 +20,6 @@ inputs:
     "Copy these Escape dependencies into vendor/ on build. Example:
     - heist/escape-middleware:github.com/ankyra/escape-middleware"
 
-- id: package_name
-  default: "github.com/ankyra/user-service"
-  description: "The name of the Go package we're building"
-
-- id: binary_name
-  default: "user-service"
-  description: "The name of the produced binary"
 
 build: build.sh
 test: test.sh
