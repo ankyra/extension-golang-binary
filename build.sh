@@ -55,6 +55,10 @@ copy_binary_out_of_volume() {
 
 main() {
     install_escape_go_deps
+    if [ "${BINARY_NAME}" = "" ] ; then
+        echo "No binary name specified. Skipping build."
+        exit 0
+    fi
     cleanup_docker
     prepare_volume 
     docker_run "${DOCKER_PACKAGE_PATH}" "go build -v"
