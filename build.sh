@@ -67,7 +67,7 @@ copy_files_out_of_volume() {
 
 main() {
     install_escape_go_deps
-    if [ "${BINARY_NAME}" = "" && "${BUILD_COMMAND}" = "" ] ; then
+    if [ "${BINARY_NAME}" = "" ] && [ "${BUILD_COMMAND}" = "" ] ; then
         echo "No binary name specified. Skipping build."
         exit 0
     fi
