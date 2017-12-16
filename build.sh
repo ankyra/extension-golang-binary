@@ -6,7 +6,7 @@ BINARY_NAME="${INPUT_binary_name}"
 PACKAGE_NAME="${INPUT_package_name}"
 COPY_FILES="${INPUT_copy_files_after_build}"
 BUILD_COMMAND="${INPUT_build_command}"
-DEPENDS=${INPUT_escape_go_dependencies:-"go build -v"}
+DEPENDS=${INPUT_escape_go_dependencies}
 DOCKER_PACKAGE_PATH="/go/src/${PACKAGE_NAME}"
 DOCKER_PACKAGE_PARENT_PATH=$(dirname "${DOCKER_PACKAGE_PATH}")
 DOCKER_VERSION=1.9.0
@@ -52,6 +52,9 @@ docker_run() {
 
 copy_binary_out_of_volume() {
     local binary_name=$1
+    if [ "$binary_name" = "" ] ; then
+        return
+    fi
     docker cp "src:${DOCKER_PACKAGE_PATH}/${binary_name}" "${binary_name}"
 }
 
@@ -64,13 +67,13 @@ copy_files_out_of_volume() {
 
 main() {
     install_escape_go_deps
-    if [ "${BINARY_NAME}" = "" ] ; then
+    if [ "${BINARY_NAME}" = "" && "${BUILD_COMMAND}" = "" ] ; then
         echo "No binary name specified. Skipping build."
         exit 0
     fi
     cleanup_docker
     prepare_volume 
-    docker_run "${DOCKER_PACKAGE_PATH}" "${BUILD_COMMAND}"
+    docker_run "${DOCKER_PACKAGE_PATH}" "${BUILD_COMMAND:-"go build -v"}"
     copy_binary_out_of_volume "${BINARY_NAME}"
     copy_files_out_of_volume
 }
