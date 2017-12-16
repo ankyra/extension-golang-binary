@@ -21,6 +21,6 @@ jobs:
         name: Build Escape release
         command: |
           escape run build && escape run test && if [ "$CIRCLE_BRANCH" = "master" ] ; then
-            escape run release --skip-build && \
+            escape run release --skip-build
           fi
 
