@@ -28,8 +28,6 @@ copy_dep_to_vendor() {
 install_escape_go_deps() {
     echo $DEPENDS | jq -r '.[]' | while read line ; do
         local arrDepends=(${line//:/ })
-        echo ${arrDepends[0]}
-        echo ${arrDepends[1]}
         copy_dep_to_vendor ${arrDepends[0]} ${arrDepends[1]}
     done
 }
