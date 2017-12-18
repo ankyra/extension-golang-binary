@@ -1,44 +1,57 @@
 name: extension-golang-binary
 version: 0.0.@
-description: 
-logo: 
+description: |
+  This extension can be used to build and test Go binaries. No local toolchain 
+  is required as this build uses the public Go Docker image to perform builds.
 
 includes:
 - README.md
+- LICENSE
 
 inputs:
 - id: package_name
-  default: "github.com/ankyra/user-service"
-  description: "The name of the Go package we're building"
+  description: The name of the Go package we're building
   visible: false
+  default: ""
+
 - id: binary_name
-  default: ""
-  description: "The name of the produced binary."
+  description: The name of the produced binary.
   visible: false
+  default: ""
+
 - id: build_command
-  default: ""
-  description: "Override the build command."
+  description: Setting this overrides the default build command.
   visible: false
+  default: ""
+
 - id: test_command
-  default: ""
-  description: "Override the test command."
+  description: Setting this overrides the default test command.
   visible: false
+  default: ""
+
+- id: go_vendor_path
+  description: The location of the vendor directory (used for escape_go_dependencies)
+  visible: false
+  default: vendor/
+
 - id: copy_files_after_build
   visible: false
   default: []
   description: |
-    "Copy these files after build. Example:
-    - README.md:file_in_root.txt"
-- id: go_vendor_path
-  default: vendor/
-  description: The location of the vendor directory (used for escape_go_dependencies)
+      Copy files and directories out of the Docker volume into the current
+      directory after the build has completed. The format is `SRC:DEST`.  For
+      example: 
+      - README.md:file_in_root.txt
+
 - id: escape_go_dependencies
   type: list[string]
   visible: false
   default: []
   description: |
-    "Copy these Escape dependencies into vendor/ on build. Example:
-    - heist/escape-middleware:github.com/ankyra/escape-middleware"
+      Copy Escape dependencies into the $go_vendor_path directory before building.
+      The format is `DEP:DEST`.  For example: 
+      - _/escape-core:github.com/ankyra/escape-core
+
 
 
 build: build.sh
