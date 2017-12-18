@@ -6,7 +6,7 @@ PACKAGE_NAME="${INPUT_package_name}"
 DOCKER_PACKAGE_PATH="/go/src/${PACKAGE_NAME}"
 DOCKER_PACKAGE_PARENT_PATH=$(dirname "${DOCKER_PACKAGE_PATH}")
 DOCKER_VERSION=1.9.0
-TEST_COMMAND=${INPUT_test_command:-"go test -cover -v \$(/usr/local/go/bin/go list ./... | grep -v -E 'vendor' )"}
+TEST_COMMAND=${INPUT_test_command:-"go test -cover -v \$(/usr/local/go/bin/go list ./... | grep -v -E 'vendor|deps' )"}
 
 cleanup_docker() {
     echo -n "Removing Docker data volume..."
