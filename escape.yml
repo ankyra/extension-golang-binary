@@ -29,6 +29,9 @@ inputs:
   description: |
     "Copy these files after build. Example:
     - README.md:file_in_root.txt"
+- id: go_vendor_path
+  default: vendor/
+  description: The location of the vendor directory (used for escape_go_dependencies)
 - id: escape_go_dependencies
   type: list[string]
   visible: false

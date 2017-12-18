@@ -7,6 +7,8 @@ PACKAGE_NAME="${INPUT_package_name}"
 COPY_FILES="${INPUT_copy_files_after_build}"
 BUILD_COMMAND="${INPUT_build_command}"
 DEPENDS=${INPUT_escape_go_dependencies}
+VENDOR=${INPUT_go_vendor_path}
+
 DOCKER_PACKAGE_PATH="/go/src/${PACKAGE_NAME}"
 DOCKER_PACKAGE_PARENT_PATH=$(dirname "${DOCKER_PACKAGE_PATH}")
 DOCKER_VERSION=1.9.0
@@ -19,7 +21,7 @@ cleanup_docker() {
 
 copy_dep_to_vendor() {
     local dep="deps/${1}"
-    local target="vendor/${2}"
+    local target="${VENDOR}/${2}"
     echo -n "Copying Escape dependency '$dep' to '$target'..."
     rm -rf "$target"
     cp -r "$dep" "$target"
