@@ -26,7 +26,13 @@ docker_run() {
     local cwd=$1
     local cmd=$2
     echo "Running '${cmd}' in Docker directory '${cwd}':"
-    docker run --rm --volumes-from src -w "$cwd" golang:${DOCKER_VERSION} bash -c "${cmd}"
+    local envs=""
+    for var in $(env) ; do 
+        if [[ $var == INPUT_* ]] ; then
+            envs="$envs -e '$var'"
+        fi
+    done
+    docker run --rm --volumes-from src $envs -w "$cwd" golang:${DOCKER_VERSION} bash -c "${cmd}"
 }
 
 
