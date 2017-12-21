@@ -49,13 +49,18 @@ docker_run() {
     local cwd=$1
     local cmd=$2
     echo "Running '${cmd}' in Docker directory '${cwd}':"
-    local envs=""
+    local dockerCmd="docker run --rm --volumes-from src -w '$cwd'"
     for var in $(env) ; do 
-        if [[ "$var" == INPUT_* ]] || [[ "$var" == OUTPUT_* ]] || "$var" == METADATA_* ]] ; then
-            envs="$envs -e '$var'"
+        if [[ $var == INPUT_* ]] || [[ $var == OUTPUT_* ]] || [[ $var == METADATA_* ]] ; then
+          arrIN=(${var//=/ })
+          if [ "${arrIN[1]+set}" == "set" ] ; then
+              dockerCmd="$dockerCmd -e \"${var}\""
+          fi
         fi
     done
-    docker run --rm --volumes-from src $envs -w "$cwd" golang:${DOCKER_VERSION} bash -c "${cmd}"
+    cmd=${cmd//\'/'"'"'"'"'}
+    dockerCmd="$dockerCmd golang:${DOCKER_VERSION} bash -c '$cmd'"
+    eval $dockerCmd
 }
 
 copy_binary_out_of_volume() {
