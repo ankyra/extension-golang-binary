@@ -11,7 +11,7 @@ VENDOR=${INPUT_go_vendor_path}
 
 DOCKER_PACKAGE_PATH="/go/src/${PACKAGE_NAME}"
 DOCKER_PACKAGE_PARENT_PATH=$(dirname "${DOCKER_PACKAGE_PATH}")
-DOCKER_VERSION=1.9.0
+GOLANG_DOCKER_IMAGE=${INPUT_go_docker_image}
 
 cleanup_docker() {
     echo -n "Removing Docker data volume..."
@@ -39,7 +39,7 @@ install_escape_go_deps() {
 
 prepare_volume() {
     echo -n "Preparing Docker data volume..."
-    docker create -v ${DOCKER_PACKAGE_PARENT_PATH} --name src golang:${DOCKER_VERSION} mkdir /code 1>/dev/null 2>&1
+    docker create -v ${DOCKER_PACKAGE_PARENT_PATH} --name src ${GOLANG_DOCKER_IMAGE}  mkdir /code 1>/dev/null 2>&1
     docker cp "$PWD" "src:${DOCKER_PACKAGE_PARENT_PATH}/tmp" 1>/dev/null
     docker_run "${DOCKER_PACKAGE_PARENT_PATH}" "mv tmp ${DOCKER_PACKAGE_PATH}" 1>/dev/null
     echo "OK"
@@ -59,7 +59,7 @@ docker_run() {
         fi
     done
     cmd=${cmd//\'/'"'"'"'"'}
-    dockerCmd="$dockerCmd golang:${DOCKER_VERSION} bash -c '$cmd'"
+    dockerCmd="$dockerCmd ${GOLANG_DOCKER_IMAGE} bash -c '$cmd'"
     eval $dockerCmd
 }
 

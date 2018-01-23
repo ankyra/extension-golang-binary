@@ -9,6 +9,10 @@ includes:
 - LICENSE
 
 inputs:
+- id: go_docker_image
+  description: The go Docker image to use.
+  default: golang:1.9.0
+
 - id: package_name
   description: The name of the Go package we're building
   visible: false
