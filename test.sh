@@ -17,7 +17,7 @@ cleanup_docker() {
 prepare_volume() {
     echo -n "Preparing Docker data volume..."
     docker create -v ${DOCKER_PACKAGE_PARENT_PATH} --name src ${GOLANG_DOCKER_IMAGE} mkdir /code 1>/dev/null 2>&1
-    docker cp "$PWD" "src:${DOCKER_PACKAGE_PARENT_PATH}/tmp" 1>/dev/null
+    docker cp "$(realpath $PWD)" "src:${DOCKER_PACKAGE_PARENT_PATH}/tmp" 1>/dev/null
     docker_run "${DOCKER_PACKAGE_PARENT_PATH}" "mv tmp ${DOCKER_PACKAGE_PATH}" 1>/dev/null
     echo "OK"
 }
