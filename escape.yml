@@ -1,5 +1,5 @@
 name: extension-golang-binary
-version: 0.0.@
+version: 1.0.@
 description: |
   This extension can be used to build and test Go binaries. No local toolchain 
   is required as this build uses the public Go Docker image to perform builds.

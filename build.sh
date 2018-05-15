@@ -48,7 +48,7 @@ prepare_volume() {
 docker_run() {
     local cwd=$1
     local cmd=$2
-    echo "Running '${cmd}' in Docker directory '${cwd}':"
+    echo "Running '${cmd}' in Docker directory '${cwd}' (image ${GOLANG_DOCKER_IMAGE}):"
     local dockerCmd="docker run --rm --volumes-from src -w '$cwd'"
     for var in $(env) ; do 
         if [[ $var == INPUT_* ]] || [[ $var == OUTPUT_* ]] || [[ $var == METADATA_* ]] ; then
