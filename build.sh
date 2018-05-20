@@ -27,6 +27,9 @@ copy_dep_to_vendor() {
     cp -r "$dep" "$target"
     rm -rf "${target}/vendor/"
     echo "OK"
+    echo -n "Deleting binaries bigger than 1M from ${target}..."
+    find "${target}" -type f -executable -size +1M -delete
+    echo "OK"
 }
 
 install_escape_go_deps() {
