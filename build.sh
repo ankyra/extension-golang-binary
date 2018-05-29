@@ -12,10 +12,11 @@ VENDOR=${INPUT_go_vendor_path}
 DOCKER_PACKAGE_PATH="/go/src/${PACKAGE_NAME}"
 DOCKER_PACKAGE_PARENT_PATH=$(dirname "${DOCKER_PACKAGE_PATH}")
 GOLANG_DOCKER_IMAGE=${INPUT_go_docker_image}
+VOLUME_NAME="src$$"
 
 cleanup_docker() {
-    echo -n "Removing Docker data volume..."
-    docker rm -v src 1>/dev/null 2>&1 || true
+    echo -n "Removing Docker data volume ${VOLUME_NAME}..."
+    docker rm -v ${VOLUME_NAME} 1>/dev/null 2>&1 || true
     echo "OK"
 }
 
@@ -42,8 +43,8 @@ install_escape_go_deps() {
 
 prepare_volume() {
     echo -n "Preparing Docker data volume..."
-    docker create -v ${DOCKER_PACKAGE_PARENT_PATH} --name src ${GOLANG_DOCKER_IMAGE}  mkdir /code 1>/dev/null 2>&1
-    docker cp "$(realpath $PWD)" "src:${DOCKER_PACKAGE_PARENT_PATH}/tmp" 1>/dev/null
+    docker create -v "${DOCKER_PACKAGE_PARENT_PATH}" --name "${VOLUME_NAME}" "${GOLANG_DOCKER_IMAGE}" mkdir /code 1>/dev/null 2>&1
+    docker cp "$(realpath $PWD)" "${VOLUME_NAME}:${DOCKER_PACKAGE_PARENT_PATH}/tmp" 1>/dev/null
     docker_run "${DOCKER_PACKAGE_PARENT_PATH}" "mv tmp ${DOCKER_PACKAGE_PATH}" 1>/dev/null
     echo "OK"
 }
@@ -52,7 +53,7 @@ docker_run() {
     local cwd=$1
     local cmd=$2
     echo "Running '${cmd}' in Docker directory '${cwd}' (image ${GOLANG_DOCKER_IMAGE}):"
-    local dockerCmd="docker run --rm --volumes-from src -w '$cwd'"
+    local dockerCmd="docker run --rm --volumes-from ${VOLUME_NAME} -w '$cwd'"
     for var in $(env) ; do 
         if [[ $var == INPUT_* ]] || [[ $var == OUTPUT_* ]] || [[ $var == METADATA_* ]] ; then
           arrIN=(${var//=/ })
@@ -71,13 +72,13 @@ copy_binary_out_of_volume() {
     if [ "$binary_name" = "" ] ; then
         return
     fi
-    docker cp "src:${DOCKER_PACKAGE_PATH}/${binary_name}" "${binary_name}"
+    docker cp "${VOLUME_NAME}:${DOCKER_PACKAGE_PATH}/${binary_name}" "${binary_name}"
 }
 
 copy_files_out_of_volume() {
     echo $COPY_FILES | jq -r '.[]' | while read line ; do
         local arrDepends=(${line//:/ })
-        docker cp "src:${DOCKER_PACKAGE_PATH}/${arrDepends[0]}" "${arrDepends[1]}"
+        docker cp "${VOLUME_NAME}:${DOCKER_PACKAGE_PATH}/${arrDepends[0]}" "${arrDepends[1]}"
     done
 }
 
