@@ -63,7 +63,7 @@ inputs:
   default: my-go-build
 - id: build_command
   default: go build -v
-- id: build_command
+- id: test_command
   default: go test -v
 ```
 
