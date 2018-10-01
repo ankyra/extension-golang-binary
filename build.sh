@@ -14,6 +14,15 @@ DOCKER_PACKAGE_PARENT_PATH=$(dirname "${DOCKER_PACKAGE_PATH}")
 GOLANG_DOCKER_IMAGE=${INPUT_go_docker_image}
 VOLUME_NAME="src$$"
 
+unameOut="$(uname -s)"
+case "${unameOut}" in
+    Linux*)     OS=Linux;;
+    Darwin*)    OS=Mac;;
+    CYGWIN*)    OS=Cygwin;;
+    MINGW*)     OS=MinGw;;
+    *)          OS="UNKNOWN:${unameOut}"
+esac
+
 cleanup_docker() {
     echo -n "Removing Docker data volume ${VOLUME_NAME}..."
     docker rm -v ${VOLUME_NAME} 1>/dev/null 2>&1 || true
@@ -29,7 +38,11 @@ copy_dep_to_vendor() {
     rm -rf "${target}/vendor/"
     echo "OK"
     echo -n "Deleting binaries bigger than 1M from ${target}..."
-    find "${target}" -type f -executable -size +1M -delete
+    if [ "${OS}" = "Mac" ] ; then
+        find "${target}" -type f -perm +111 -size +1M -delete
+    else
+        find "${target}" -type f -executable -size +1M -delete
+    fi
     echo "OK"
 }
 
