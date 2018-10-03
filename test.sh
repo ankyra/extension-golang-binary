@@ -15,6 +15,12 @@ cleanup_docker() {
     echo "OK"
 }
 
+realpath() {
+    path=`eval echo "$1"`
+    folder=$(dirname "$path")
+    echo $(cd "$folder"; pwd)/$(basename "$path");
+}
+
 prepare_volume() {
     echo -n "Preparing Docker data volume..."
     docker create -v ${DOCKER_PACKAGE_PARENT_PATH} --name "${VOLUME_NAME}" "${GOLANG_DOCKER_IMAGE}" mkdir /code 1>/dev/null 2>&1

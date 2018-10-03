@@ -53,6 +53,11 @@ install_escape_go_deps() {
     done
 }
 
+realpath() {
+    path=`eval echo "$1"`
+    folder=$(dirname "$path")
+    echo $(cd "$folder"; pwd)/$(basename "$path");
+}
 
 prepare_volume() {
     echo -n "Preparing Docker data volume..."
